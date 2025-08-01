@@ -1,3 +1,4 @@
+import 'package:budgetmate/Screens/name_input_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -19,28 +20,28 @@ class _StartScreenState extends State<StartScreen> {
         child: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF00C853).withOpacity(0.3),     // Top color (green)
-            Color(0xFFF9F9F9).withOpacity(0.3),
-  ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Color(0xFF00C853).withOpacity(0.3),
+                Color(0xFFF9F9F9).withOpacity(0.3),
+              ],
+            ),
           ),
-        ),
           child: Center(
             child: Column(
               children: <Widget>[
-                SizedBox(height: screenHeight * 0.1), // 10% of screen height
+                SizedBox(height: screenHeight * 0.1),
                 Image.asset(
                   "assets/images/on_boarding.png",
                   fit: BoxFit.cover,
-                  height: screenHeight * 0.4, // 40% of screen height
+                  height: screenHeight * 0.4,
                 ),
-                SizedBox(height: screenHeight * 0.05), // 5% of screen height
+                SizedBox(height: screenHeight * 0.05),
                 Text(
                   "Spend Smarter",
                   style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.09, // 9% of screen width
+                    fontSize: screenWidth * 0.09,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF00C853),
                   ),
@@ -56,20 +57,17 @@ class _StartScreenState extends State<StartScreen> {
                 SizedBox(height: screenHeight * 0.05),
                 ElevatedButton(
                   onPressed: () {
-                    print("GET STRATED PRESSED");
+                    Navigator.pushNamed(context, '/name');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF00C853),
                     foregroundColor: Colors.white,
-                    minimumSize: Size(screenWidth* 0.75, screenHeight * 0.08),
-                  shadowColor: Color(0xFF00E676),
+                    minimumSize: Size(screenWidth * 0.75, screenHeight * 0.08),
+                    shadowColor: Color(0xFF00E676),
                     elevation: 10,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
-                      side: BorderSide(
-                        color: Colors.white,
-                        width: 2,
-                      ),
+                      side: BorderSide(color: Colors.white, width: 2),
                     ),
                   ),
                   child: Text(
@@ -90,3 +88,4 @@ class _StartScreenState extends State<StartScreen> {
     );
   }
 }
+

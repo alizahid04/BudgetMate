@@ -1,3 +1,5 @@
+import 'package:budgetmate/Screens/home_screen.dart';
+import 'package:budgetmate/Screens/name_input_screen.dart';
 import 'package:flutter/material.dart';
 import 'Screens/start_screen.dart';
 
@@ -11,7 +13,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: StartScreen(),
+      routes: {
+        '/': (context) =>  HomePage(),
+        // '/home': (context) => const HomePage(),
+        // '/name': (context) => const NameInputScreen(),
+      },
     );
   }
 }
