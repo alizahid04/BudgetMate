@@ -2,7 +2,6 @@ import 'package:budgetmate/Screens/home_screen.dart';
 import 'package:budgetmate/Screens/name_input_screen.dart';
 import 'package:flutter/material.dart';
 import 'Screens/start_screen.dart';
-
 void main() {
   runApp(const MyApp());
 }

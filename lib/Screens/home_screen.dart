@@ -71,6 +71,8 @@ class _HomePageState extends State<HomePage> {
           children: [
             SizedBox(height: 10,),
             homeCard(),
+            TransactionListPage(),
+            myAppBar(),
           ],
         ),
       ),
@@ -192,3 +194,161 @@ class _homeCardState extends State<homeCard> {
     );
   }
 }
+class TransactionListPage extends StatelessWidget {
+  const TransactionListPage({super.key});
+
+  Widget transactionRow(
+      String title, String date, String amount, Color amountColor) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+      child: Row(
+        children: [
+          // Just a circle placeholder
+          CircleAvatar(
+            radius: 24,
+            backgroundColor: Colors.grey[300],
+          ),
+          const SizedBox(width: 12),
+          // Title and Date
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    style: GoogleFonts.poppins(
+                        fontSize: 16, fontWeight: FontWeight.w600)),
+                Text(date,
+                    style: GoogleFonts.poppins(
+                        fontSize: 13, color: Colors.grey[600])),
+              ],
+            ),
+          ),
+          // Amount
+          Text(amount,
+              style: GoogleFonts.poppins(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: amountColor)),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal:8, vertical: 16),
+            child: Text(
+              "Transaction History",
+              style: GoogleFonts.poppins(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(height: 2,),
+          Expanded(
+            child: ListView(
+              children: [
+                transactionRow("Upwork", "Today", "+ \$850.00", Colors.green),
+                transactionRow("Transfer", "Yesterday", "- \$85.00", Colors.red),
+                transactionRow("Paypal", "Jan 30, 2022", "+ \$1,406.00", Colors.green),
+                transactionRow("YouTube", "Jan 16, 2022", "- \$11.99", Colors.red),
+                transactionRow("Paypal", "Jan 30, 2022", "+ \$1,406.00", Colors.green),
+                transactionRow("YouTube", "Jan 16, 2022", "- \$11.99", Colors.red),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+class myAppBar extends StatefulWidget {
+  const myAppBar({super.key});
+
+  @override
+  State<myAppBar> createState() => _myAppBarState();
+}
+
+class _myAppBarState extends State<myAppBar> {
+  @override
+  Widget build(BuildContext context) {
+    return BottomAppBar(
+      color: Colors.transparent,
+      shape: const CircularNotchedRectangle(),
+      child: SizedBox(
+        child: Padding(
+          padding: const EdgeInsets.symmetric( vertical: 8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.home),
+                color: Colors.green[700],
+                tooltip: 'Home',
+                iconSize: 40,
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.stacked_bar_chart_rounded),
+                color: Colors.grey[700],
+                tooltip: 'Stats',
+                iconSize: 40,
+              ),
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.green[600],
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.green.withOpacity(0.5),
+                      spreadRadius: 6,
+                      blurRadius: 14,
+
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.add),
+                    color: Colors.white,
+                    iconSize: 40,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    tooltip: 'Add',
+                    splashRadius: 28,  // nice tap ripple radius
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.wallet),
+                color: Colors.grey[700],
+                tooltip: 'Wallet',
+                iconSize: 40,
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.settings),
+                color: Colors.grey[700],
+                tooltip: 'Settings',
+                iconSize: 40,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
