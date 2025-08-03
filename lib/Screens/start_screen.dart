@@ -57,7 +57,7 @@ class _StartScreenState extends State<StartScreen> {
                 SizedBox(height: screenHeight * 0.05),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/name');
+                    Navigator.pushReplacementNamed(context, '/name');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF00C853),

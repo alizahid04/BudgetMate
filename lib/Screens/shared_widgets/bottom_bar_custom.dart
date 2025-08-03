@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../Add_Transaction_screen.dart';
+
 class MyAppBar extends StatelessWidget {
   final int selectedIndex;
 
@@ -17,8 +19,14 @@ class MyAppBar extends StatelessWidget {
           children: [
             navIcon(context, Icons.home, 'Home', 0, '/home'),
             navIcon(context, Icons.swap_vert, 'History', 1, '/history'),
-          _buildAddButton(),
-            navIcon(context, Icons.savings, 'Icons.track_changes', 2,  '/goals'),
+            _buildAddButton(context),
+            navIcon(
+              context,
+              Icons.currency_exchange,
+              'Icons.currency_exchange',
+              2,
+              '/goals',
+            ),
             navIcon(context, Icons.settings, 'Settings', 3, '/settings'),
           ],
         ),
@@ -26,7 +34,13 @@ class MyAppBar extends StatelessWidget {
     );
   }
 
-  Widget navIcon(BuildContext context, IconData icon, String tooltip, int index, String route) {
+  Widget navIcon(
+    BuildContext context,
+    IconData icon,
+    String tooltip,
+    int index,
+    String route,
+  ) {
     return IconButton(
       onPressed: () {
         if (ModalRoute.of(context)?.settings.name != route) {
@@ -40,7 +54,7 @@ class MyAppBar extends StatelessWidget {
     );
   }
 
-  Widget _buildAddButton() {
+  Widget _buildAddButton(BuildContext context) {
     return Container(
       width: 100,
       height: 100,
@@ -57,8 +71,17 @@ class MyAppBar extends StatelessWidget {
       ),
       child: Center(
         child: IconButton(
-          onPressed: () {
-            // Navigate to add transaction
+          onPressed: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => AddTransactionPage(
+                  onTransactionAdded: () {
+                    // Refresh logic if needed (optional)
+                  },
+                ),
+              ),
+            );
           },
           icon: const Icon(Icons.add),
           color: Colors.white,

@@ -1,6 +1,8 @@
 import 'package:budgetmate/Screens/shared_widgets/bottom_bar_custom.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../../models/database_helper.dart';
+
 class AllTransactionsPage extends StatefulWidget {
   const AllTransactionsPage({super.key});
 
@@ -12,38 +14,27 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
   String selectedRange = 'All';
   String selectedType = 'All';
 
-  final List<Map<String, dynamic>> transactions = [
-    {
-      'title': 'Freelance Payment',
-      'date': '2025-08-02',
-      'amount': 1200.00,
-      'type': 'income',
-    },
-    {
-      'title': 'Groceries',
-      'date': '2025-08-01',
-      'amount': 150.50,
-      'type': 'expense',
-    },
-    {
-      'title': 'Online Course',
-      'date': '2025-07-30',
-      'amount': 30.00,
-      'type': 'expense',
-    },
-    {
-      'title': 'Salary',
-      'date': '2025-07-28',
-      'amount': 3000.00,
-      'type': 'income',
-    },
-  ];
+  List<Map<String, dynamic>> allTransactions = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTransactions();
+  }
+
+  Future<void> _loadTransactions() async {
+    final dbHelper = DatabaseHelper();
+    final data = await dbHelper.getAllTransactions();
+    setState(() {
+      allTransactions = data;
+    });
+  }
 
   List<Map<String, dynamic>> get filteredTransactions {
     final now = DateTime.now();
 
-    return transactions.where((tx) {
-      final txDate = DateTime.parse(tx['date']);
+    return allTransactions.where((tx) {
+      final txDate = DateTime.tryParse(tx['date'] ?? '') ?? now;
 
       // Filter by time range
       if (selectedRange == 'Weekly' && now.difference(txDate).inDays > 7) return false;
@@ -74,7 +65,6 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Filter: Time
                 DropdownButton<String>(
                   value: selectedRange,
                   items: ['All', 'Weekly', 'Monthly', 'Yearly']
@@ -84,7 +74,6 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
                     setState(() => selectedRange = value!);
                   },
                 ),
-                // Filter: Type
                 DropdownButton<String>(
                   value: selectedType,
                   items: ['All', 'Income', 'Expense']
@@ -106,7 +95,7 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
               itemBuilder: (context, index) {
                 final tx = filteredTransactions[index];
                 final isIncome = tx['type'] == 'income';
-                final dateFormatted = DateTime.parse(tx['date']);
+                final dateFormatted = DateTime.tryParse(tx['date']) ?? DateTime.now();
 
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -131,18 +120,15 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> {
                         ),
                       ),
                       title: Text(
-                        tx['title'],
+                        tx['title'] ?? '',
                         style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
                       ),
                       subtitle: Text(
                         "${dateFormatted.month}/${dateFormatted.day}/${dateFormatted.year}",
-                        style: GoogleFonts.poppins(
-                          fontSize: 13,
-                          color: Colors.grey[600],
-                        ),
+                        style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[600]),
                       ),
                       trailing: Text(
-                        "${isIncome ? '+' : '-'} \$${tx['amount'].toStringAsFixed(2)}",
+                        "${isIncome ? '+' : '-'} \$${(tx['amount'] as num).toStringAsFixed(2)}",
                         style: GoogleFonts.poppins(
                           color: isIncome ? Colors.green : Colors.red,
                           fontWeight: FontWeight.bold,
