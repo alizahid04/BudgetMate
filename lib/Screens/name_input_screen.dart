@@ -1,169 +1,257 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
-class NameInputScreen extends StatelessWidget {
+import 'package:budgetmate/models/database_helper.dart';
+class NameInputScreen extends StatefulWidget {
   const NameInputScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
+  State<NameInputScreen> createState() => _NameInputScreenState();
+}
 
-    final TextEditingController _nameController = TextEditingController();
+class _NameInputScreenState extends State<NameInputScreen>
+    with SingleTickerProviderStateMixin {
+  final TextEditingController _nameController = TextEditingController();
+
+  final List<Map<String, String>> _currencies = [
+    {'code': 'USD', 'symbol': '\$', 'flag': '🇺🇸'},
+    {'code': 'PKR', 'symbol': '₨', 'flag': '🇵🇰'},
+    {'code': 'EUR', 'symbol': '€', 'flag': '🇪🇺'},
+    {'code': 'GBP', 'symbol': '£', 'flag': '🇬🇧'},
+    {'code': 'INR', 'symbol': '₹', 'flag': '🇮🇳'},
+  ];
+
+  String _selectedCurrencyCode = 'USD';
+
+  late AnimationController _animController;
+  late Animation<double> _fadeAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 900));
+    _fadeAnim = CurvedAnimation(parent: _animController, curve: Curves.easeIn);
+    _animController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveUserData() async {
+    String name = _nameController.text.trim();
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Please enter your name."),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+
+    try {
+      await DatabaseHelper().saveUserSettings(name, _selectedCurrencyCode);
+      Navigator.pushReplacementNamed(context, '/home');
+    } catch (e) {
+      // Show error if saving fails
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Failed to save data: $e"),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFF00C853).withOpacity(0.3),
-              Color(0xFFF9F9F9).withOpacity(0.3),
-            ],
-          ),
-        ),
-        child: Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.08,
-            vertical: screenHeight * 0.05,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header with smooth animation
-              AnimatedOpacity(
-                opacity: 1,
-                duration: const Duration(milliseconds: 500),
-                child: Text(
-                  "What's your name?",
-                  style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.065,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[800],
-                  ),
+      backgroundColor: const Color(0xFFF6F8FA),
+      body: SafeArea(
+        child: FadeTransition(
+          opacity: _fadeAnim,
+          child: Center(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.symmetric(horizontal: width * 0.08),
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 30, horizontal: 25),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black12,
+                      blurRadius: 24,
+                      offset: Offset(0, 10),
+                    )
+                  ],
                 ),
-              ),
-
-              SizedBox(height: screenHeight * 0.01),
-
-              // Subtitle for better context
-              AnimatedOpacity(
-                opacity: 1,
-                duration: const Duration(milliseconds: 700),
-                child: Text(
-                  "We'll use this to personalize your experience",
-                  style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.035,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ),
-
-              SizedBox(height: screenHeight * 0.05),
-
-              // Enhanced TextField with focus effects
-              Focus(
-                onFocusChange: (hasFocus) {
-                  // Handle focus changes if needed
-                },
-                child: TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    hintText: "Enter your name",
-                    hintStyle: GoogleFonts.poppins(
-                      color: Colors.grey[400],
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: Colors.grey[300]!,
-                        width: 1.5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Title
+                    Text(
+                      "Welcome!",
+                      style: GoogleFonts.poppins(
+                        fontSize: 28,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF212121),
                       ),
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(
-                        color: const Color(0xFF00C853),
-                        width: 1.5,
+
+                    SizedBox(height: 8),
+
+                    Text(
+                      "Tell us your name and preferred currency to personalize your experience.",
+                      style: GoogleFonts.poppins(
+                        fontSize: 15,
+                        color: Colors.grey[600],
+                        height: 1.4,
                       ),
                     ),
-                    filled: true,
-                    fillColor: Colors.grey[50],
-                    contentPadding: EdgeInsets.symmetric(
-                      horizontal: screenWidth * 0.04,
-                      vertical: screenHeight * 0.025,
-                    ),
-                  ),
-                  style: GoogleFonts.poppins(
-                    fontSize: screenWidth * 0.045,
-                    color: Colors.grey[800],
-                  ),
-                ),
-              ),
 
-              SizedBox(height: screenHeight * 0.06),
+                    SizedBox(height: 30),
 
-              // Elevated button with hover and press effects
-              Center(
-                child: MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    width: screenWidth * 0.7,
-                    height: screenHeight * 0.07,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color(0xFF00C853).withOpacity(0.3),
-                          blurRadius: 10,
-                          spreadRadius: 0,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: ElevatedButton(
-                      onPressed: () {
-                        String enteredName = _nameController.text.trim();
-                        if (enteredName.isEmpty) {
-                          // Add subtle shake animation for empty input
-                          // You can use packages like flutter_animate for this
-                          return;
-                        }
-                        print("User name: $enteredName");
-                        // Navigate or store name here
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF00C853),
-                        foregroundColor: Colors.white,
-                        minimumSize: Size(screenWidth * 0.75, screenHeight * 0.08),
-                        shadowColor: Color(0xFF00E676),
-                        elevation: 10,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          side: BorderSide(color: Colors.white, width: 2),
-                        ),
+                    // Name TextField with floating label style
+                    TextField(
+                      controller: _nameController,
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.w600,
                       ),
-                      child: Text(
-                        "Continue",
-                        style: GoogleFonts.poppins(
-                          fontSize: screenWidth * 0.045,
+                      decoration: InputDecoration(
+                        labelText: "Your Name",
+                        labelStyle: GoogleFonts.poppins(
+                          color: Colors.grey[500],
                           fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                          letterSpacing: 0.5,
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.auto,
+                        filled: true,
+                        fillColor: Color(0xFFF5F7FA),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(color: Color(0xFF00C853), width: 2),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+                        ),
+                        contentPadding:
+                        EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                      ),
+                    ),
+
+                    SizedBox(height: 30),
+
+                    // Currency label
+                    Text(
+                      "Select Currency",
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                        color: Colors.grey[800],
+                      ),
+                    ),
+
+                    SizedBox(height: 8),
+
+                    // Currency Dropdown
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFF5F7FA),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.grey.shade300, width: 1.5),
+                      ),
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<String>(
+                          value: _selectedCurrencyCode,
+                          isExpanded: true,
+                          icon:
+                          Icon(Icons.keyboard_arrow_down, color: Colors.grey[700]),
+                          items: _currencies.map((currency) {
+                            return DropdownMenuItem<String>(
+                              value: currency['code'],
+                              child: Row(
+                                children: [
+                                  Text(
+                                    currency['flag'] ?? '',
+                                    style: TextStyle(fontSize: 22),
+                                  ),
+                                  SizedBox(width: 12),
+                                  Text(
+                                    "${currency['code']} — ${currency['symbol']}",
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedCurrencyCode = value!;
+                            });
+                          },
                         ),
                       ),
                     ),
-                  ),
+
+                    SizedBox(height: 40),
+
+                    // Continue Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 56,
+                      child: ElevatedButton(
+                        onPressed: _saveUserData,
+                        style: ElevatedButton.styleFrom(
+                          elevation: 12,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          padding: EdgeInsets.zero,
+                          backgroundColor: null,
+                        ),
+                        child: Ink(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Color(0xFF00C853), Color(0xFF00E676)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: Container(
+                            alignment: Alignment.center,
+                            constraints: BoxConstraints(minHeight: 56),
+                            child: Text(
+                              "Continue",
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                                letterSpacing: 1.1,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
       ),
