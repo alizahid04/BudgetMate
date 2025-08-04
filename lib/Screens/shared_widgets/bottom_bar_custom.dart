@@ -22,10 +22,10 @@ class MyAppBar extends StatelessWidget {
             _buildAddButton(context),
             navIcon(
               context,
-              Icons.currency_exchange,
-              'Icons.currency_exchange',
+              Icons.track_changes,
+              'Icons.track_changes',
               2,
-              '/goals',
+              '/Goal',
             ),
             navIcon(context, Icons.settings, 'Settings', 3, '/settings'),
           ],
