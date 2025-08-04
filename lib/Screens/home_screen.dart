@@ -173,7 +173,6 @@ class _HomePageState extends State<HomePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 10),
-            // Balance Card
             Container(
               width: MediaQuery.of(context).size.width * 0.9,
               height: MediaQuery.of(context).size.height * 0.23,
@@ -208,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        "$currencySymbol ${currentBalance.toStringAsFixed(2)}",
+                         "$currencySymbol ${currentBalance.toStringAsFixed(2)}",
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 26,
@@ -236,7 +235,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            "$currencySymbol ${totalIncome.toStringAsFixed(2)}",
+                             "$currencySymbol ${totalIncome.toStringAsFixed(2)}",
                             style: GoogleFonts.poppins(
                               color: Colors.white,
                               fontSize: 18,

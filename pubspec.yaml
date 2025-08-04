@@ -16,6 +16,7 @@ dependencies:
   sqflite: ^2.4.2
   path: ^1.9.1
   fl_chart: ^1.0.0
+  intl: ^0.20.2
 
   # iOS-style icons
   cupertino_icons: ^1.0.8

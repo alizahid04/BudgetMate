@@ -24,7 +24,6 @@ class MyApp extends StatelessWidget {
         // '/goals': (context) =>  GoalsPage(),
         '/Transaction': (context) => AddTransactionPage(
           onTransactionAdded: () {
-            // Do something here, e.g., refresh a list or just print
             print('Transaction added!');
           },
         ),
