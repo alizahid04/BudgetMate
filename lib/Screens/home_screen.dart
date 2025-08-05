@@ -12,7 +12,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   String userName = '';
-  String currencySymbol = '₨'; // Default symbol, you can update from currency code
+  String currencySymbol = '₨';
   double currentBalance = 0;
   double totalIncome = 0;
   double totalExpense = 0;
@@ -118,7 +118,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: const Color(0xFF00C853),
-        elevation: 0,
+        elevation: 4,
         toolbarHeight: 100,
         shape: const ContinuousRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(70)),

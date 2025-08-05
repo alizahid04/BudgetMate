@@ -166,10 +166,8 @@ class _GoalsPageState extends State<GoalsPage> {
       },
     );
   }
-
   void _addMoneyToGoal(Goal goal) {
     final amountController = TextEditingController();
-
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -208,7 +206,6 @@ class _GoalsPageState extends State<GoalsPage> {
 
                   final newSavedAmount = goal.savedAmount + amount;
                   await dbHelper.updateGoalSavedAmount(goal.id, newSavedAmount);
-
                   await _loadData();
                   Navigator.pop(context);
                 }
@@ -280,8 +277,16 @@ class _GoalsPageState extends State<GoalsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Goals'),
-        backgroundColor: Colors.green,
+        title: Text('My Goals',
+            style: GoogleFonts.poppins(
+              color: Colors.white,
+              fontSize: 22,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.5,
+            ),
+        ),
+        backgroundColor: const Color(0xFF00C853),
+        elevation: 4,
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())

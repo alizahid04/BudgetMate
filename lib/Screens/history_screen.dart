@@ -64,10 +64,16 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
     final theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('All Transactions', style: GoogleFonts.poppins(fontWeight: FontWeight.w600, fontSize: 20)),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black87,
-        elevation: 1,
+        title: Text('All Transactions',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+        backgroundColor: const Color(0xFF00C853),
+        elevation: 4,
       ),
       backgroundColor: const Color(0xFFF9FAFB),
       body: Column(

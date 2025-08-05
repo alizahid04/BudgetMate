@@ -6,6 +6,7 @@ import '../models/database_helper.dart';
 
 class AddTransactionPage extends StatefulWidget {
   final VoidCallback onTransactionAdded;
+
   const AddTransactionPage({super.key, required this.onTransactionAdded});
 
   @override
@@ -65,10 +66,17 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
-        title: Text('Add Transaction', style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        foregroundColor: Colors.black87,
+        title: Text(
+          'Add Transaction',
+          style: GoogleFonts.poppins(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+        backgroundColor: const Color(0xFF00C853),
+        elevation: 4,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
@@ -82,7 +90,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 decoration: InputDecoration(
                   labelText: 'Title',
                   prefixIcon: const Icon(Icons.title),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 style: GoogleFonts.poppins(),
                 validator: (value) => value!.isEmpty ? 'Enter a title' : null,
@@ -96,7 +106,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 decoration: InputDecoration(
                   labelText: 'Amount',
                   prefixIcon: const Icon(Icons.attach_money),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 style: GoogleFonts.poppins(),
                 validator: (value) => value!.isEmpty ? 'Enter an amount' : null,
@@ -109,10 +121,15 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 decoration: InputDecoration(
                   labelText: 'Type',
                   prefixIcon: const Icon(Icons.swap_vert),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 items: ['Income', 'Expense']
-                    .map((type) => DropdownMenuItem(value: type, child: Text(type)))
+                    .map(
+                      (type) =>
+                          DropdownMenuItem(value: type, child: Text(type)),
+                    )
                     .toList(),
                 onChanged: (value) => setState(() => _type = value!),
               ),
@@ -124,10 +141,14 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 decoration: InputDecoration(
                   labelText: 'Category',
                   prefixIcon: const Icon(Icons.category),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 items: _categories
-                    .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
+                    .map(
+                      (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
+                    )
                     .toList(),
                 onChanged: (value) => setState(() => _category = value!),
               ),
@@ -141,7 +162,9 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   decoration: InputDecoration(
                     labelText: 'Date',
                     prefixIcon: const Icon(Icons.calendar_today),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
                   child: Text(
                     DateFormat('MMM dd, yyyy').format(_selectedDate),
@@ -157,10 +180,15 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 child: ElevatedButton.icon(
                   onPressed: _saveTransaction,
                   icon: const Icon(Icons.save),
-                  label: Text('Save Transaction', style: GoogleFonts.poppins(fontWeight: FontWeight.w500)),
+                  label: Text(
+                    'Save Transaction',
+                    style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                  ),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                     backgroundColor: Colors.green.shade600,
                   ),
                 ),
