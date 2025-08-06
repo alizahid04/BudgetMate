@@ -1,3 +1,4 @@
+import 'package:budgetmate/Screens/setting_screen.dart';
 import 'package:budgetmate/models/database_helper.dart';
 import 'package:budgetmate/Screens/shared_widgets/bottom_bar_custom.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +36,20 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+
+    if (hour < 12) {
+      return "Good morning";
+    } else if (hour < 17) {
+      return "Good afternoon";
+    } else if (hour < 21) {
+      return "Good evening";
+    } else {
+      return "Good night";
+    }
+  }
+
 
   Future<void> loadTransactions() async {
     final txs = await DatabaseHelper().getAllTransactions();
@@ -133,14 +148,14 @@ class _HomePageState extends State<HomePage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Good afternoon,",
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
+                      Text(
+                        "${_getGreeting()},",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
                     Text(
                       "$displayName,",
                       style: GoogleFonts.poppins(
@@ -151,16 +166,43 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.notifications),
-                    color: Colors.white,
-                  ),
+                Row(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.notifications),
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    // Settings icon button added here
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.settings),
+                        color: Colors.white,
+                        onPressed: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const SettingsPage()),
+                          );
+                          if (result == true) {
+                            await loadUserData();
+                            await loadTransactions();
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -207,7 +249,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                         "$currencySymbol ${currentBalance.toStringAsFixed(2)}",
+                        "$currencySymbol ${currentBalance.toStringAsFixed(2)}",
                         style: GoogleFonts.poppins(
                           color: Colors.white,
                           fontSize: 26,
@@ -235,7 +277,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                             "$currencySymbol ${totalIncome.toStringAsFixed(2)}",
+                            "$currencySymbol ${totalIncome.toStringAsFixed(2)}",
                             style: GoogleFonts.poppins(
                               color: Colors.white,
                               fontSize: 18,

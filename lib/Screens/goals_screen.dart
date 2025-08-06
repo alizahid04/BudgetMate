@@ -265,7 +265,8 @@ class _GoalsPageState extends State<GoalsPage> {
               onPressed: () => _addMoneyToGoal(goal),
               icon: const Icon(Icons.add),
               label: const Text('Add Money'),
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.green,
+                foregroundColor: Colors.white,),
             ),
           ),
         ]),
@@ -327,6 +328,7 @@ class _GoalsPageState extends State<GoalsPage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _addGoal,
         backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
         child: const Icon(Icons.add),
         tooltip: 'Add New Goal',
       ),
