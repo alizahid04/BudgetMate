@@ -1,6 +1,6 @@
-import 'package:budgetmate/Screens/name_input_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({super.key});
@@ -10,6 +10,13 @@ class StartScreen extends StatefulWidget {
 }
 
 class _StartScreenState extends State<StartScreen> {
+  Future<void> completeOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboardingSeen', true);
+
+    Navigator.pushReplacementNamed(context, '/name');
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -56,9 +63,7 @@ class _StartScreenState extends State<StartScreen> {
                 ),
                 SizedBox(height: screenHeight * 0.05),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/name');
-                  },
+                  onPressed: completeOnboarding,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF00C853),
                     foregroundColor: Colors.white,
