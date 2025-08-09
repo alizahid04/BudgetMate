@@ -130,6 +130,7 @@ class _HomePageState extends State<HomePage> {
     final displayName = userName.isEmpty ? "User" : userName;
 
     return Scaffold(
+
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: const Color(0xFF00C853),
