@@ -84,42 +84,23 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Range Dropdown
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300),
-                    color: Colors.white,
-                  ),
-                  child: DropdownButton<String>(
-                    value: selectedRange,
-                    underline: const SizedBox(),
-                    items: ['All', 'Weekly', 'Monthly', 'Yearly']
-                        .map((e) => DropdownMenuItem(value: e, child: Text(e, style: GoogleFonts.poppins(fontSize: 14))))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() => selectedRange = value!);
-                    },
-                  ),
+                _buildDropdown(
+                  value: selectedRange,
+                  options: ['All', 'Weekly', 'Monthly', 'Yearly'],
+                  onChanged: (val) {
+                    if (val != null) setState(() => selectedRange = val);
+                  },
+                  width: 150,
                 ),
 
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.grey.shade300),
-                    color: Colors.white,
-                  ),
-                  child: DropdownButton<String>(
-                    value: selectedType,
-                    underline: const SizedBox(),
-                    items: ['All', 'Income', 'Expense']
-                        .map((e) => DropdownMenuItem(value: e, child: Text(e, style: GoogleFonts.poppins(fontSize: 14))))
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() => selectedType = value!);
-                    },
-                  ),
+                // Type Dropdown
+                _buildDropdown(
+                  value: selectedType,
+                  options: ['All', 'Income', 'Expense'],
+                  onChanged: (val) {
+                    if (val != null) setState(() => selectedType = val);
+                  },
+                  width: 140,
                 ),
               ],
             ),
@@ -263,6 +244,32 @@ class _AllTransactionsPageState extends State<AllTransactionsPage> with SingleTi
         ],
       ),
       bottomNavigationBar: const MyAppBar(selectedIndex: 1),
+    );
+  }
+
+  Widget _buildDropdown({
+    required String value,
+    required List<String> options,
+    required void Function(String?) onChanged,
+    required double width,
+  }) {
+    return Container(
+      width: width,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.grey.shade300),
+        color: Colors.white,
+      ),
+      child: DropdownButton<String>(
+        value: value,
+        underline: const SizedBox(),
+        isExpanded: true,
+        items: options
+            .map((e) => DropdownMenuItem(value: e, child: Text(e, style: GoogleFonts.poppins(fontSize: 14))))
+            .toList(),
+        onChanged: onChanged,
+      ),
     );
   }
 

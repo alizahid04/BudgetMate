@@ -17,7 +17,6 @@ class _HomePageState extends State<HomePage> {
   double currentBalance = 0;
   double totalIncome = 0;
   double totalExpense = 0;
-
   List<Map<String, dynamic>> transactions = [];
 
   @override
@@ -36,24 +35,17 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
+
   String _getGreeting() {
     final hour = DateTime.now().hour;
-
-    if (hour < 12) {
-      return "Good morning";
-    } else if (hour < 17) {
-      return "Good afternoon";
-    } else if (hour < 21) {
-      return "Good evening";
-    } else {
-      return "Good night";
-    }
+    if (hour < 12) return "Good morning";
+    if (hour < 17) return "Good afternoon";
+    if (hour < 21) return "Good evening";
+    return "Good night";
   }
-
 
   Future<void> loadTransactions() async {
     final txs = await DatabaseHelper().getAllTransactions();
-
     double income = 0;
     double expense = 0;
 
@@ -92,14 +84,15 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget transactionRow(
-      String title, String date, String amount, Color amountColor) {
+      String title, String date, String amount, Color amountColor, IconData icon) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
       child: Row(
         children: [
           CircleAvatar(
             radius: 24,
-            backgroundColor: Colors.grey[300],
+            backgroundColor: amountColor.withOpacity(0.15),
+            child: Icon(icon, color: amountColor, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -108,7 +101,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Text(title,
                     style: GoogleFonts.poppins(
-                        fontSize: 16, fontWeight: FontWeight.w600)),
+                        fontSize: 15, fontWeight: FontWeight.w600)),
                 Text(date,
                     style: GoogleFonts.poppins(
                         fontSize: 13, color: Colors.grey[600])),
@@ -118,7 +111,7 @@ class _HomePageState extends State<HomePage> {
           Text(amount,
               style: GoogleFonts.poppins(
                   fontSize: 15,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w700,
                   color: amountColor)),
         ],
       ),
@@ -130,18 +123,17 @@ class _HomePageState extends State<HomePage> {
     final displayName = userName.isEmpty ? "User" : userName;
 
     return Scaffold(
-
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: const Color(0xFF00C853),
-        elevation: 4,
+        elevation: 0,
         toolbarHeight: 100,
         shape: const ContinuousRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(70)),
         ),
         flexibleSpace: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -149,244 +141,161 @@ class _HomePageState extends State<HomePage> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                      Text(
-                        "${_getGreeting()},",
+                    Text("${_getGreeting()},",
+                        style: GoogleFonts.poppins(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 16,
+                        )),
+                    Text(displayName,
                         style: GoogleFonts.poppins(
                           color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    Text(
-                      "$displayName,",
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        )),
                   ],
                 ),
-                Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.notifications),
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    // Settings icon button added here
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.2),
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.settings),
-                        color: Colors.white,
-                        onPressed: () async {
-                          final result = await Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const SettingsPage()),
-                          );
-                          if (result == true) {
-                            await loadUserData();
-                            await loadTransactions();
-                          }
-                        },
-                      ),
-                    ),
-                  ],
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.notifications_outlined),
+                    color: Colors.white,
+                  ),
                 ),
               ],
             ),
           ),
         ),
       ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 10),
-            Container(
-              width: MediaQuery.of(context).size.width * 0.9,
-              height: MediaQuery.of(context).size.height * 0.23,
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: const Color(0xFF00C853),
-                borderRadius: BorderRadius.circular(20),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.05),
-                    blurRadius: 8,
-                    spreadRadius: 2,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Balance Label
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Current Balance",
-                        style: GoogleFonts.poppins(
-                          color: Colors.white70,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        "$currencySymbol ${currentBalance.toStringAsFixed(2)}",
-                        style: GoogleFonts.poppins(
-                          color: Colors.white,
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Income & Expense Row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Income
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Income",
-                            style: GoogleFonts.poppins(
-                              color: Colors.white70,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "$currencySymbol ${totalIncome.toStringAsFixed(2)}",
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // Expense
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Text(
-                            "Expense",
-                            style: GoogleFonts.poppins(
-                              color: Colors.white70,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            "$currencySymbol ${totalExpense.toStringAsFixed(2)}",
-                            style: GoogleFonts.poppins(
-                              color: Colors.white,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+      body: Column(
+        children: [
+          const SizedBox(height: 10),
+          // Balance Card
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: const Color(0xFF00C853),
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.green.withOpacity(0.15),
+                  blurRadius: 10,
+                  offset: const Offset(0, 5),
+                ),
+              ],
             ),
-
-            // Transaction list
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 14),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Current Balance",
+                    style: GoogleFonts.poppins(
+                        color: Colors.white70,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500)),
+                const SizedBox(height: 6),
+                Text("$currencySymbol ${currentBalance.toStringAsFixed(2)}",
+                    style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold)),
+                const SizedBox(height: 15),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Income
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "Transactions History",
-                          style: GoogleFonts.poppins(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w700,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/history');
-                          },
-                          child: Text(
-                            "See all",
+                        Text("Income",
                             style: GoogleFonts.poppins(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.green[600],
-                            ),
-                          ),
-                        ),
+                                color: Colors.white70, fontSize: 14)),
+                        const SizedBox(height: 4),
+                        Text("$currencySymbol ${totalIncome.toStringAsFixed(2)}",
+                            style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600)),
                       ],
                     ),
-                  ),
-                  Expanded(
-                    child: transactions.isEmpty
-                        ? Center(
-                      child: Text(
-                        "No transactions found",
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    )
-                        : ListView.builder(
-                      itemCount: transactions.length,
-                      itemBuilder: (context, index) {
-                        final tx = transactions[index];
-                        final amount = (tx['amount'] as num).toDouble();
-                        final type = tx['type'] as String;
-                        final color =
-                        type == 'income' ? Colors.green : Colors.red;
-                        final sign = type == 'income' ? "+" : "-";
-
-                        return transactionRow(
-                          tx['title'],
-                          tx['date'],
-                          "$sign $currencySymbol${amount.toStringAsFixed(2)}",
-                          color,
-                        );
-                      },
+                    // Expense
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text("Expense",
+                            style: GoogleFonts.poppins(
+                                color: Colors.white70, fontSize: 14)),
+                        const SizedBox(height: 4),
+                        Text("$currencySymbol ${totalExpense.toStringAsFixed(2)}",
+                            style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600)),
+                      ],
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 20),
+          // Transactions Title
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("Transactions History",
+                    style: GoogleFonts.poppins(
+                        fontSize: 18, fontWeight: FontWeight.w700)),
+                TextButton(
+                  onPressed: () {
+                    Navigator.pushReplacementNamed(context, '/history');
+                  },
+                  child: Text("See all",
+                      style: GoogleFonts.poppins(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.green[700])),
+                ),
+              ],
+            ),
+          ),
+          // Transactions List
+          Expanded(
+            child: transactions.isEmpty
+                ? Center(
+                child: Text("No transactions found",
+                    style: GoogleFonts.poppins(
+                        fontSize: 15, color: Colors.grey)))
+                : ListView.builder(
+              padding: const EdgeInsets.only(top: 5, bottom: 10),
+              itemCount: transactions.length,
+              itemBuilder: (context, index) {
+                final tx = transactions[index];
+                final amount = (tx['amount'] as num).toDouble();
+                final type = tx['type'] as String;
+                final color =
+                type == 'income' ? Colors.green : Colors.red;
+                final sign = type == 'income' ? "+" : "-";
+                final icon = type == 'income'
+                    ? Icons.arrow_downward
+                    : Icons.arrow_upward;
+
+                return transactionRow(
+                  tx['title'],
+                  tx['date'],
+                  "$sign $currencySymbol${amount.toStringAsFixed(2)}",
+                  color,
+                  icon,
+                );
+              },
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: MyAppBar(selectedIndex: 0),
     );

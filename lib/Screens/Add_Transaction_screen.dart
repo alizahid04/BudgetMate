@@ -35,9 +35,15 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
 
   Future<void> _saveTransaction() async {
     if (_formKey.currentState!.validate()) {
+      final amount = double.tryParse(_amountController.text);
+      if (amount == null || amount <= 0) {
+        _showError('Please enter a valid positive amount.');
+        return;
+      }
+
       final data = {
         'title': _titleController.text.trim(),
-        'amount': double.parse(_amountController.text),
+        'amount': amount,
         'type': _type.toLowerCase(),
         'category': _category,
         'date': _selectedDate.toIso8601String(),
@@ -49,12 +55,35 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
     }
   }
 
+  void _showError(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.redAccent,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: ColorScheme.light(
+            primary: Colors.green.shade600, // header background color
+            onPrimary: Colors.white, // header text color
+            onSurface: Colors.black87, // body text color
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(foregroundColor: Colors.green.shade600),
+          ),
+        ),
+        child: child!,
+      ),
     );
     if (picked != null) {
       setState(() => _selectedDate = picked);
@@ -62,7 +91,17 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
   }
 
   @override
+  void dispose() {
+    _titleController.dispose();
+    _amountController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    const borderRadius = BorderRadius.all(Radius.circular(12));
+    final inputBorder = OutlineInputBorder(borderRadius: borderRadius);
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -90,30 +129,47 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 decoration: InputDecoration(
                   labelText: 'Title',
                   prefixIcon: const Icon(Icons.title),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  border: inputBorder,
+                  enabledBorder: inputBorder.copyWith(
+                    borderSide: BorderSide(color: Colors.grey.shade400),
+                  ),
+                  focusedBorder: inputBorder.copyWith(
+                    borderSide: BorderSide(color: Colors.green.shade600, width: 2),
                   ),
                 ),
                 style: GoogleFonts.poppins(),
-                validator: (value) => value!.isEmpty ? 'Enter a title' : null,
+                validator: (value) => value == null || value.trim().isEmpty ? 'Enter a title' : null,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
               // Amount Field
               TextFormField(
                 controller: _amountController,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
+                keyboardType: const TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(
                   labelText: 'Amount',
                   prefixIcon: const Icon(Icons.attach_money),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  border: inputBorder,
+                  enabledBorder: inputBorder.copyWith(
+                    borderSide: BorderSide(color: Colors.grey.shade400),
+                  ),
+                  focusedBorder: inputBorder.copyWith(
+                    borderSide: BorderSide(color: Colors.green.shade600, width: 2),
                   ),
                 ),
                 style: GoogleFonts.poppins(),
-                validator: (value) => value!.isEmpty ? 'Enter an amount' : null,
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return 'Enter an amount';
+                  }
+                  final n = double.tryParse(value);
+                  if (n == null || n <= 0) {
+                    return 'Enter a valid positive number';
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
               // Type Dropdown
               DropdownButtonFormField<String>(
@@ -121,19 +177,20 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 decoration: InputDecoration(
                   labelText: 'Type',
                   prefixIcon: const Icon(Icons.swap_vert),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  border: inputBorder,
+                  enabledBorder: inputBorder.copyWith(
+                    borderSide: BorderSide(color: Colors.grey.shade400),
+                  ),
+                  focusedBorder: inputBorder.copyWith(
+                    borderSide: BorderSide(color: Colors.green.shade600, width: 2),
                   ),
                 ),
                 items: ['Income', 'Expense']
-                    .map(
-                      (type) =>
-                          DropdownMenuItem(value: type, child: Text(type)),
-                    )
+                    .map((type) => DropdownMenuItem(value: type, child: Text(type)))
                     .toList(),
                 onChanged: (value) => setState(() => _type = value!),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
               // Category Dropdown
               DropdownButtonFormField<String>(
@@ -141,29 +198,35 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                 decoration: InputDecoration(
                   labelText: 'Category',
                   prefixIcon: const Icon(Icons.category),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                  border: inputBorder,
+                  enabledBorder: inputBorder.copyWith(
+                    borderSide: BorderSide(color: Colors.grey.shade400),
+                  ),
+                  focusedBorder: inputBorder.copyWith(
+                    borderSide: BorderSide(color: Colors.green.shade600, width: 2),
                   ),
                 ),
                 items: _categories
-                    .map(
-                      (cat) => DropdownMenuItem(value: cat, child: Text(cat)),
-                    )
+                    .map((cat) => DropdownMenuItem(value: cat, child: Text(cat)))
                     .toList(),
                 onChanged: (value) => setState(() => _category = value!),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 18),
 
               // Date Picker
               InkWell(
                 onTap: _pickDate,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: borderRadius,
                 child: InputDecorator(
                   decoration: InputDecoration(
                     labelText: 'Date',
                     prefixIcon: const Icon(Icons.calendar_today),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    border: inputBorder,
+                    enabledBorder: inputBorder.copyWith(
+                      borderSide: BorderSide(color: Colors.grey.shade400),
+                    ),
+                    focusedBorder: inputBorder.copyWith(
+                      borderSide: BorderSide(color: Colors.green.shade600, width: 2),
                     ),
                   ),
                   child: Text(
@@ -182,14 +245,18 @@ class _AddTransactionPageState extends State<AddTransactionPage> {
                   icon: const Icon(Icons.save),
                   label: Text(
                     'Save Transaction',
-                    style: GoogleFonts.poppins(fontWeight: FontWeight.w500),
+                    style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                   style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     backgroundColor: Colors.green.shade600,
+                    foregroundColor: Colors.white,
+                    elevation: 5,
+                    shadowColor: Colors.greenAccent.shade100,
                   ),
                 ),
               ),

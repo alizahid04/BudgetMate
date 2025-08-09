@@ -14,44 +14,53 @@ class MyAppBar extends StatelessWidget {
       shape: const CircularNotchedRectangle(),
       elevation: 6,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6.0),
+        padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            navIcon(context, Icons.home, 'Home', 0, '/home'),
-            navIcon(context, Icons.swap_vert, 'History', 1, '/history'),
+            _navIcon(context, Icons.home, 'Home', 0, '/home'),
+            _navIcon(context, Icons.swap_vert, 'History', 1, '/history'),
             _buildAddButton(context),
-            navIcon(context, Icons.track_changes, 'Goals', 2, '/Goal'),
-            navIcon(context, Icons.settings, 'Settings', 3, '/settings'),
+            _navIcon(context, Icons.track_changes, 'Goals', 2, '/Goal'),
+            _navIcon(context, Icons.settings, 'Settings', 3, '/settings'),
           ],
         ),
       ),
     );
   }
 
-  Widget navIcon(
+  Widget _navIcon(
       BuildContext context,
       IconData icon,
       String tooltip,
       int index,
       String route,
       ) {
+    final bool isSelected = selectedIndex == index;
+    final Color activeColor = Colors.green.shade700;
+    final Color inactiveColor = Colors.grey.shade600;
+
     return IconButton(
       onPressed: () {
+        // Prevent pushing same route multiple times
         if (ModalRoute.of(context)?.settings.name != route) {
           Navigator.pushReplacementNamed(context, route);
         }
       },
       icon: Icon(icon),
       tooltip: tooltip,
-      iconSize: 26, // Standard professional size
-      color: selectedIndex == index ? Colors.green[700] : Colors.grey[600],
+      iconSize: 28, // Slightly bigger for accessibility
+      color: isSelected ? activeColor : inactiveColor,
+      splashRadius: 26,
+      visualDensity: VisualDensity.compact,
+      focusColor: activeColor.withOpacity(0.2),
+      hoverColor: activeColor.withOpacity(0.1),
     );
   }
 
   Widget _buildAddButton(BuildContext context) {
     return Material(
-      color: Colors.transparent, // Needed for ripple
+      color: Colors.transparent,
       child: InkWell(
         customBorder: const CircleBorder(),
         splashColor: Colors.white.withOpacity(0.2),
@@ -61,7 +70,7 @@ class MyAppBar extends StatelessWidget {
             MaterialPageRoute(
               builder: (_) => AddTransactionPage(
                 onTransactionAdded: () {
-                  // Optional refresh logic
+                  // You can add refresh logic here if needed
                 },
               ),
             ),
@@ -72,20 +81,20 @@ class MyAppBar extends StatelessWidget {
           height: 62,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.green[600],
+            color: Colors.green.shade600,
             boxShadow: [
               BoxShadow(
-                color: Colors.green.withOpacity(0.3),
+                color: Colors.green.shade600.withOpacity(0.35),
                 spreadRadius: 3,
                 blurRadius: 10,
-                offset: const Offset(0, 4), // Lifted shadow
+                offset: const Offset(0, 4),
               ),
             ],
           ),
           child: const Icon(
             Icons.add,
             color: Colors.white,
-            size: 26, // Balanced size for visibility
+            size: 28,
           ),
         ),
       ),
