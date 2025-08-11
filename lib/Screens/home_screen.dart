@@ -35,6 +35,107 @@ class _HomePageState extends State<HomePage> {
       });
     }
   }
+  Future<void> _showImportantEvents(BuildContext context) async {
+    // Fetch real monthly income (budget)
+    final double moneyBudget = await DatabaseHelper().getMonthlyIncome();
+    final double moneyUsed = totalExpense; // from your loaded transactions
+    final double moneyUsedPercent = moneyBudget > 0 ? (moneyUsed / moneyBudget) * 100 : 0;
+
+    // Fetch goals with progress
+    final List<Map<String, dynamic>> goals =
+    await DatabaseHelper().getGoalsWithProgress();
+
+    final List<String> quotes = [
+      "Don't tell me what your priorities are. Show me where you spend your money and I'll tell you what they are.",
+      "A budget is telling your money where to go instead of wondering where it went.",
+      "The goal isn’t more money. The goal is living life on your terms.",
+      "Beware of little expenses; a small leak will sink a great ship.",
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          height: 350,
+          child: Column(
+            children: [
+              Container(
+                width: 40,
+                height: 5,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text('Recent Important Events',
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              Expanded(
+                child: ListView(
+                  children: [
+                    if (moneyBudget > 0 && moneyUsedPercent >= 80)
+                      ListTile(
+                        leading: const Icon(Icons.warning, color: Colors.orange),
+                        title: Text(
+                          "Budget Limit Alert",
+                          style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600, fontSize: 16),
+                        ),
+                        subtitle: Text(
+                            "You've used ${moneyUsedPercent.toStringAsFixed(0)}% of your Money budget this month."),
+                      ),
+                    if (moneyBudget > 0 && moneyUsedPercent < 50)
+                      ListTile(
+                        leading: const Icon(Icons.check_circle, color: Colors.green),
+                        title: Text(
+                          "Unused Budget Alert",
+                          style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600, fontSize: 16),
+                        ),
+                        subtitle: Text(
+                            "You still have ${(100 - moneyUsedPercent).toStringAsFixed(0)}% budget left."),
+                      ),
+                    const Divider(),
+                    ...goals.where((g) => g['progressPercent'] >= 80).map((goal) {
+                      return ListTile(
+                        leading: const Icon(Icons.flag, color: Colors.blue),
+                        title: Text(
+                          "Progress Reminder",
+                          style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600, fontSize: 16),
+                        ),
+                        subtitle: Text(
+                            "You have reached ${goal['progressPercent'].toStringAsFixed(0)}% of your '${goal['title']}' goal."),
+                      );
+                    }).toList(),
+                    const Divider(),
+                    ListTile(
+                      leading: const Icon(Icons.format_quote, color: Colors.purple),
+                      title: Text(
+                        "Quote of the Day",
+                        style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.w600, fontSize: 16),
+                      ),
+                      subtitle: Text(
+                        (quotes..shuffle()).first,
+                        style: GoogleFonts.poppins(fontStyle: FontStyle.italic),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
@@ -155,16 +256,17 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.notifications_outlined),
-                    color: Colors.white,
-                  ),
-                ),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        _showImportantEvents(context);
+                      },
+                      icon: const Icon(Icons.notifications_outlined),
+                      color: Colors.white,
+                    )),
               ],
             ),
           ),
@@ -269,8 +371,8 @@ class _HomePageState extends State<HomePage> {
             child: transactions.isEmpty
                 ? Center(
                 child: Text("No transactions found",
-                    style: GoogleFonts.poppins(
-                        fontSize: 15, color: Colors.grey)))
+                    style:
+                    GoogleFonts.poppins(fontSize: 15, color: Colors.grey)))
                 : ListView.builder(
               padding: const EdgeInsets.only(top: 5, bottom: 10),
               itemCount: transactions.length,
@@ -278,8 +380,7 @@ class _HomePageState extends State<HomePage> {
                 final tx = transactions[index];
                 final amount = (tx['amount'] as num).toDouble();
                 final type = tx['type'] as String;
-                final color =
-                type == 'income' ? Colors.green : Colors.red;
+                final color = type == 'income' ? Colors.green : Colors.red;
                 final sign = type == 'income' ? "+" : "-";
                 final icon = type == 'income'
                     ? Icons.arrow_downward

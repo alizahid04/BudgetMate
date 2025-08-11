@@ -62,15 +62,16 @@ class MyAppBar extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        customBorder: const CircleBorder(),
+        borderRadius: BorderRadius.circular(31), // Matches the circular container radius
         splashColor: Colors.white.withOpacity(0.2),
         onTap: () async {
+          // Navigate to AddTransactionPage and optionally handle post-add logic
           await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (_) => AddTransactionPage(
                 onTransactionAdded: () {
-                  // You can add refresh logic here if needed
+                  // TODO: Add refresh logic or state update here if needed
                 },
               ),
             ),
@@ -91,10 +92,13 @@ class MyAppBar extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-            size: 28,
+          child: const Center(
+            child: Icon(
+              Icons.add,
+              color: Colors.white,
+              size: 28,
+              semanticLabel: 'Add transaction', // Accessibility improvement
+            ),
           ),
         ),
       ),

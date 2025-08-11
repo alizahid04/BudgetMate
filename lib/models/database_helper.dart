@@ -112,6 +112,30 @@ class DatabaseHelper {
     return await db.query('transactions', orderBy: 'date DESC');
   }
 
+  // New method to get total income for current month (used as budget)
+  Future<double> getMonthlyIncome() async {
+    final db = await database;
+    final now = DateTime.now();
+    final startOfMonth = DateTime(now.year, now.month, 1);
+    final startOfNextMonth =
+    (now.month == 12) ? DateTime(now.year + 1, 1, 1) : DateTime(now.year, now.month + 1, 1);
+
+    final result = await db.rawQuery('''
+      SELECT SUM(amount) as totalIncome 
+      FROM transactions 
+      WHERE type = ? AND date >= ? AND date < ?
+    ''', [
+      'income',
+      startOfMonth.toIso8601String(),
+      startOfNextMonth.toIso8601String(),
+    ]);
+
+    if (result.isNotEmpty && result.first['totalIncome'] != null) {
+      return result.first['totalIncome'] as double;
+    }
+    return 0.0;
+  }
+
   // --- User Settings ---
 
   Future<void> saveUserSettings(String name, String currency,
@@ -159,6 +183,22 @@ class DatabaseHelper {
   Future<List<Map<String, dynamic>>> getAllGoals() async {
     final db = await database;
     return await db.query('goals');
+  }
+
+  // New method to get goals with progress percentage
+  Future<List<Map<String, dynamic>>> getGoalsWithProgress() async {
+    final goals = await getAllGoals();
+
+    return goals.map((goal) {
+      final target = (goal['targetAmount'] as num?)?.toDouble() ?? 1.0;
+      final saved = (goal['savedAmount'] as num?)?.toDouble() ?? 0.0;
+      final progressPercent = ((saved / target) * 100).clamp(0, 100);
+
+      return {
+        ...goal,
+        'progressPercent': progressPercent,
+      };
+    }).toList();
   }
 
   Future<int> updateGoalSavedAmount(int id, double newSavedAmount) async {
